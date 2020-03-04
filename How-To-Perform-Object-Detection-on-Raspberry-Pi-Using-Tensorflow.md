@@ -1,8 +1,6 @@
 How To Perform Object Detection on a Raspberry Pi Using Tensorflow 
 ==================================================================
 
-Guide for Beginners
-
 **Created 3/3/2020 by Jackie Staiger (code borrowed from edje)**
 
 This procedure works was designed for the 1 GB raspberry pi 4B, though earlier versions should work as well
@@ -11,13 +9,11 @@ This procedure works was designed for the 1 GB raspberry pi 4B, though earlier v
 {: .note}
 
 ## Introduction
-<!-- blank line -->
 ---
 
 This file explains the general process of setting up TensorFlow for object detection on a raspberry pi. As mentioned in the note above, 
 
 ## Steps
-<!-- blank line -->
 ---
 
 ### 1: Install Tensorflow, OpenCV, and All Their Necessary Dependencies
