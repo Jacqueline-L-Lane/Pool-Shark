@@ -164,7 +164,7 @@ sudo python3 setup.py install
 ```
 ### In Case of "Nets" Error:
 
-Add the following lines to the end of bashrc file:
+Make modifications to bashrc file:
 
 ```
 vim ~/.bashrc
