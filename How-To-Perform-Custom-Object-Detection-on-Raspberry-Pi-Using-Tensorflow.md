@@ -17,9 +17,9 @@ TODO
 
 ## 2: Custom Object Detection
 
-### 1. Take a LOT of photos of the objects you are trying to detect (more than 350 is recommended) with different lighting conditions, angles, backgrounds, etc.
+1. Take a LOT of photos of the objects you are trying to detect (more than 350 is recommended) with different lighting conditions, angles, backgrounds, etc.
 
-### 2. Download labelImg in order to label all your photos. Assuming you are in your pi's home directory, type the following:
+2. Download labelImg in order to label all your photos. Assuming you are in your pi's home directory, type the following:
 
 ```
 cd Downloads
@@ -29,14 +29,14 @@ sudo apt-get install pyqt5-dev-tools
 sudo apt-get install python3-lxml
 make qt5py3
 ```
-### 3. Run labelImg:
+3. Run labelImg:
 ```
 cd Downloads/labelIng
 python3 labelImg.py
 ```
-### 4. Label images by creating bounding boxes around the objects you are trying to detect
+4. Label images by creating bounding boxes around the objects you are trying to detect
 
-### 5. Convert from labelImg to tf Records:
+5. Convert from labelImg to tf Records:
 ```
 cd tensorflow/models/research
 sudo python3 setup.py install
