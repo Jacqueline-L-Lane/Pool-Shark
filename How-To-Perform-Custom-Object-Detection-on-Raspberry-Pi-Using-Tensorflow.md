@@ -140,7 +140,44 @@ m. Login using the Login button
 
 n. Copy object_detection folder over into tensorflow/models/research/
 
+### 3. Miscellaneous 
 
+Open GCP VM instance
+
+```
+cd ~
+cd Downloads
+git clone https://github.com/pdollar/coco.git    # get coco
+cd coco/PythonAPI
+make 
+sudo make install
+sudo python3 setup.py install
+```
+### Get Older Version of TensorFlow
+
+```
+python 3 -m pip install tensorflow==1.15
+python3 -c 'import tensorflow as tf; print(tf.__version__)'     # check correct version
+cd tensorflowmodels/research/
+sudo python3 setup.py build
+sudo python3 setup.py install
+```
+### In Case of "Nets" Error:
+
+Add the following lines to the end of bashrc file:
+
+```
+vim ~/.bashrc
+export MODELS=~/Desktop/models            # path_to_models_directory
+export PYTHONPATH=$MODELS:$MODELS/slim
+# Save changes and exit file
+source ~/.bashrc                          
+```
+#### Begin Training
+
+```
+python3 train.py --logtostderr --train_dir=training/ --pipeline_config_path=training/ssdlite_mobilenet_v2_coco.config
+```
 
 TODO
 
