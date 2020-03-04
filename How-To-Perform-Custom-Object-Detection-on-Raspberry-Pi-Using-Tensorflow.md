@@ -116,7 +116,7 @@ b. Find your GCP VM instance’s EXTERNAL IP address: on GCP Console, go to Navi
 
 c. Load your private key to PuTTYgen: in PuTTYgen, click Load. PuTTYgen will display a dialog box where you can browse around the file system and find your key file. Once you select the file, PuTTYgen will ask you for a passphrase (if necessary) and will then display the key details in the same way as if it had just generated the key
 
-d. Enter your GCP username (e.g. jlstaiger) (or any other account name you want to be created) to Key comment box
+d. Enter your GCP username (or any other account name you want to be created) to Key comment box
 
 e. Copy the contents of Public key for pasting into OpenSSH authorized_keys file
 On GCP Console, go to Navigation Menu -> Metadata, click on right tab at top that says SSH Keys, then click Edit, click Add Item button and paste contents of clipboard (your public key) 
