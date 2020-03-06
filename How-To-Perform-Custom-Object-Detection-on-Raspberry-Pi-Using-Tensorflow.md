@@ -104,11 +104,12 @@ git clone --recurse-submodules https://github.com/tensorflow/models.git
 On Windows Desktop, download WinSCP from Ninite.com: go down to Developer Tools and select WinSCP, then download and run WinSCP. Create a folder on your Windows desktop to store the folder
 
 Type in raspberry pi’s IP address (e.g. 192.168.1.38), username (pi) and your password
+
 Save state, login, then click and drag the object_detection folder from the right side (the raspberry pi desktop) to the left side (your Windows desktop)
 
-### 2. Copy files from your Windows desktop to your GCP VM instance using WinSCP. But this is more complicated than the first step. Follow this tutorial:
+### 2. Copy files from your Windows desktop to your GCP VM instance using WinSCP. Follow tutorial below:
 
-https://winscp.net/eng/docs/guide_google_compute_engine
+https://winscp.net/eng/docs/guide_google_compute_engine 
 
 a. You will need PuTTYgen to generate a new key if you don’t already have it: in your computer’s search bar, type PuTTYgen, click, press Generate button, select comment field and passphrase, then click Save Private Key (leave interface open)
 
@@ -175,11 +176,70 @@ source ~/.bashrc
 ```
 #### Begin Training
 
+In object_detection folder, run the following command:
+
 ```
 python3 train.py --logtostderr --train_dir=training/ --pipeline_config_path=training/ssdlite_mobilenet_v2_coco.config
 ```
 
-TODO
+You should be able to view training status using tensorboard by opening a new terminal of your VM instance (just click on SSH again), running the following command, and then clicking on the web page generated at localhost.6006, though I have not yet figured out how to get this to work on GCP:
 
+```
+tensorboard --logdir=training
+```
+
+Continue training until your average loss rate is < 1.0. I **_highly_** recommended waiting until the average loss rate is 0.05
+
+To terminate training, press Ctrl C
+
+Check your training folder for the last checkpoint number (make a note of the largest number)
+
+Run the following command, making sure to replace _ssdlite_mobilenet_v2_coco.config_ with whichever model you are using and the model checkpoint (_model.ckpt-XXXX_) with the last checkpoint number in your training folder
+
+```
+python3 export_inference_graph.py --input_type image_tensor --pipeline_config_path training/ssdlite_mobilenet_v2_coco.config --trained_checkpoint_prefix training/model.ckpt-XXXX --output_directory inference_graph 
+```
+## 5: Copy files from VM instance on GCP back to Raspberry Pi (2 STEPS)
+
+Copy the newly created _inference_graph_ directory (which should now contain a frozen inference graph) from your VM instance to your desktop, and then from your desktop back to the raspberry pi using WinSCP (if you saved the IP addresses from Step 2 (see above)), this should be trivial
+
+## 6. Testing your Custom Model:
+
+### Test your Custom Model on Live Video Feed (Picamera or Webcam)
+
+In the _object_detection_ directory, make a copy of the _Object_detection_picamera.py_ script, rename it, then make modifications (Replace <YOUR_MODULE_NAME> with whatever you're detecting (e.g. Pool_ball_detection_webcam.py))
+
+```
+cp Object_detection_picamera.py <YOUR_MODULE_NAME>_picamera.py     # If you are using a picamera or webcam  
+```
+Edit the file: find the following variables and modify the values as necessary:
+
+```
+NUM_CLASSES = 17                                                 # change number of classes from 90 to however many classes you’re using
+MODEL_NAME = ‘inference_graph’                                   # change directory from ‘ssdlite_mobilenet_v2_coco_2018_05_09’ to the folder your frozen inference graph is located in
+```
+Save changes and exit
+
+In _object_detection_ folder: 
+
+```
+python3 <YOUR_MODULE_NAME>_picamera.py --usbcam                  # run this if you are using a webcam
+python3 <YOUR_MODULE_NAME>_picamera.py                           # run this if you are using a picamera      
+```
+
+### Test your Custom Model on Images
+
+Save image(s) in _object_detection_ directory that you would like to test
+
+```
+cp Object_detection_image.py <YOUR_MODULE_NAME>_image.py     # If you are using a picamera or webcam  
+```
+Edit the file: find _IMAGE_NAME = 'test1.jpg'_ and replace _test1_ with the name of your image
+
+In _object_detection_ folder: 
+
+```
+python3 Object_detection_image.py
+```
 
 
