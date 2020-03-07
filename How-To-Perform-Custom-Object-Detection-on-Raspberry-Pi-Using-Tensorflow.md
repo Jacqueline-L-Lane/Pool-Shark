@@ -15,7 +15,7 @@ The tutorial begins by explaining how to install TensorFlow and OpenCV on both t
 **Note 2:** An older version of TensorFlow (TensorFlow 1.15) is currently being used until the pycocotools bug with TensorFlow 2.0's model_main.py gets resolved. This will require you to have to use a deprecated training file, though this will be explained in detail.
 
 # Outline of Steps in Tutorial
-1. [Install Tensorflow, OpenCV, and all necessary dependencies on the raspberry pi]( ##-1:-Install-Tensorflow,-OpenCV,-and-All-the-Necessary-Dependencies-on-the-Raspberry-Pi)
+1. [Install Tensorflow, OpenCV, and all necessary dependencies on the raspberry pi](##-1:-Install-Tensorflow,-OpenCV,-and-All-the-Necessary-Dependencies-on-the-Raspberry-Pi)
 
 2. Take photos and label images using labelImg
 
