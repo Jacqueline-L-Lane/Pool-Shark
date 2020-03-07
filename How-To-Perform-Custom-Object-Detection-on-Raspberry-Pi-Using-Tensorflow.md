@@ -5,19 +5,39 @@ How To Perform Custom Object Detection on a Raspberry Pi Using Tensorflow
 
 **Created 3/3/2020 (code borrowed from various sources)**
 
-**Note:** due to the limited amount of memory on the raspberry pi, this tutorial requires the creation of a virtual machine (VM) instance on Google Cloud Platform (GCP) (this will be described in detail below). This tutorial also assumes you have either a webcam or picamera in order to take photos or display a live feed. 
-
 # Introduction
-This tutorial explains the general process of setting up TensorFlow for object detection on a 1 GB raspberry pi 4B, though earlier pi versions should work as well. An older version of TensorFlow is currently being used until the pycocotools bug with TensorFlow's model_main.py gets resolved. 
+This tutorial is designed to walk you through setting up a custom object detection model using TensorFlow on a raspberry pi 4B, assuming basic knowledge of directory navigation and file manipulation in a Linux/Raspian environment and assuming NO prior knowledge about deep learning or object detection. This method is ideal for those who want to be able to detect objects quickly using a small dataset (< 400 images) who are unfamiliar with deep learning methods.
+
+The tutorial begins by explaining how to install TensorFlow and OpenCV on both the pi (for testing) and on a virtual machine (for training). Object detection can be performed on live video feed from a picamera or webcam, images, or a pre-recorded video. Though this procedure was tested using a raspberry pi 4B, earlier pi versions should work as well. 
+
+**Note 1:** Due to the limited amount of memory on the raspberry pi, you will need to perform training on either your own personal computer or a virtual machine (VM) instance, such as that on Google Cloud Platform (GCP) (the method using GCP will be described in detail below for those reluctant to install TensorFlow directly on their personal computers). 
+
+**Note 2:** An older version of TensorFlow (TensorFlow 1.15) is currently being used until the pycocotools bug with TensorFlow 2.0's model_main.py gets resolved. This will require you to have to use a deprecated training file, though this will be explained in detail.
+
+# Outline of Steps in Tutorial
+1. [Install Tensorflow, OpenCV, and all necessary dependencies on the raspberry pi](#1:-Install-Tensorflow,-OpenCV,-and-All-the-Necessary-Dependencies-on-the-Raspberry-Pi)
+
+2. Take photos and label images using labelImg
+
+3. Create a GCP VM instance (this step can be skipped if you would rather perform the training directly on your computer)
+
+4. Copy _object_detection_ directory from pi to GCP VM instance
+
+5. Train your custom model on the GCP VM instance
+
+6. Copy _inference_graph_ directory from GCP VM instance to pi
+
+7. Test your custom model using either live video feed, images, or pre-recorded video
+
 
 # Steps
-## 1: Install Tensorflow, OpenCV, and All the Necessary Dependencies
+## 1: Install Tensorflow, OpenCV, and All the Necessary Dependencies on the Raspberry Pi
 
 TODO
 
-## 2: Custom Object Detection
+## 2: Label Images
 
-1. Take a LOT of photos of the objects you are trying to detect (more than 350 is recommended) with different lighting conditions, angles, backgrounds, etc.
+1. Take a LOT of photos of the objects you are trying to detect (more than 350 is recommended, though the more you have, the better) with different lighting conditions, angles, backgrounds, etc. You can also find images online
 
 2. Download labelImg in order to label all your photos. Assuming you are in your pi's home directory, type the following:
 
@@ -99,51 +119,45 @@ git clone --recurse-submodules https://github.com/tensorflow/models.git
 
 ## 4: Copy files from Raspberry Pi to VM instance on GCP (2 STEPS)
 
-### 1. Copy files from raspberry pi to Windows desktop using WinSCP:
+### 1. Copy files from Raspberry Pi to Windows desktop using WinSCP:
 
-On Windows Desktop, download WinSCP from Ninite.com: go down to Developer Tools and select WinSCP, then download and run WinSCP. Create a folder on your Windows desktop to store the folder
+On Windows Desktop, download WinSCP from Ninite.com: go down to _Developer Tools_ and select _WinSCP_, then download and run WinSCP. Create a folder on your Windows desktop to store the folder
 
-Type in raspberry pi’s IP address (e.g. 192.168.1.38), username (pi) and your password
+Type in raspberry pi’s IP address (e.g. 192.168.1.38), username (e.g. pi) and your password
 
-Save state, login, then click and drag the object_detection folder from the right side (the raspberry pi desktop) to the left side (your Windows desktop)
+Save state, login, then click and drag the _object_detection_ folder from the right side (the raspberry pi desktop) to the left side (your Windows desktop)
 
 ### 2. Copy files from your Windows desktop to your GCP VM instance using WinSCP. Follow tutorial below:
 
 https://winscp.net/eng/docs/guide_google_compute_engine 
 
-a. You will need PuTTYgen to generate a new key if you don’t already have it: in your computer’s search bar, type PuTTYgen, click, press Generate button, select comment field and passphrase, then click Save Private Key (leave interface open)
+A. You will need PuTTYgen to generate a new key if you don’t already have it: in your computer’s search bar, type PuTTYgen, click, press _Generate_ button, select a comment field and a passphrase you can remember, then click _Save Private Key_ (leave the PuTTYgen interface open)
 
-b. Find your GCP VM instance’s EXTERNAL IP address: on GCP Console, go to Navigation Menu -> VM instances, then click your instance, find external IP address (ephemeral) 
+**Open up GCP Console:**
 
-c. Load your private key to PuTTYgen: in PuTTYgen, click Load. PuTTYgen will display a dialog box where you can browse around the file system and find your key file. Once you select the file, PuTTYgen will ask you for a passphrase (if necessary) and will then display the key details in the same way as if it had just generated the key
+B. Find your GCP VM instance’s EXTERNAL IP address: on the GCP Console, go to _Navigation Menu -> VM instances_, then click your instance, and find the external IP address (ephemeral) 
 
-d. Enter your GCP username (or any other account name you want to be created) to Key comment box
+**Back in PuTTYgen:***
 
-e. Copy the contents of Public key for pasting into OpenSSH authorized_keys file
-On GCP Console, go to Navigation Menu -> Metadata, click on right tab at top that says SSH Keys, then click Edit, click Add Item button and paste contents of clipboard (your public key) 
-Add bottom of page, click Save
+C. Load your private key to PuTTYgen: click _Load_. PuTTYgen will display a dialog box where you can browse around the file system and find your key file. Once you select the file, PuTTYgen will ask you for a passphrase (if necessary) and will then display the key details in the same way as if it had just generated the key. Enter your GCP username (or any other account name you want to be created) to the _Key comment_ box. Copy the contents of _Public key for pasting into OpenSSH authorized_keys file_ (Ctrl C).
 
-f. Open WinSCP, New site, SFTP protocol 
+**Back in GCP Console:**
 
-g. Enter your GCE instance public IP address (see above) into the Host name box
+D. On the GCP Console, navigate to _Navigation Menu -> Metadata_, click on right tab at top that says _SSH Keys_, then click _Edit_, click _Add Item_ button and paste the contents of your clipboard (the public key that you just copied). At the bottom of the page, click _Save_
 
-h. Enter the account name (that the console extracted out of your GCE username) into the User name box
+**Open WinSCP:**
 
-i. Press Advanced button to open Advanced site settings dialog and go to SSH > Authentication page
+E. In WinSCP, click _New site_, make sure _SFTP protocol_ is selected. Enter your GCE instance public IP address (see above) into the _Host name_ box. Enter the account name (that the console extracted out of your GCE username) into the _User name_ box. Press _Advanced_ button to open Advanced site settings dialog and go to _SSH > Authentication page_. In the _Private key file_ box, select your private key file. Submit the Advanced site settings dialog with _OK_ button
 
-j. In the Private key file box select your private key file
+F. Save your site settings using the _Save_ button. Login using the _Login_ button
 
-k. Submit the Advanced site settings dialog with OK button
+G. Now copy (click and drag) _object_detection_ directory from your personal computer into tensorflow/models/research/ on the VM instance
 
-l. Save your site settings using the Save button
+## 5. Training your Custom Model
 
-m. Login using the Login button
+Open GCP VM instance (click _SSH_ button)
 
-n. Copy object_detection folder over into tensorflow/models/research/
-
-### 3. Miscellaneous 
-
-Open GCP VM instance
+### Miscellaneous Stuff:
 
 ```
 cd ~
@@ -154,7 +168,7 @@ make
 sudo make install
 sudo python3 setup.py install
 ```
-### Get Older Version of TensorFlow
+### Get Older Version of TensorFlow:
 
 ```
 python 3 -m pip install tensorflow==1.15
@@ -174,7 +188,7 @@ export PYTHONPATH=$MODELS:$MODELS/slim
 # Save changes and exit file
 source ~/.bashrc                          
 ```
-#### Begin Training
+### Begin Training
 
 In object_detection folder, run the following command:
 
@@ -199,11 +213,11 @@ Run the following command, making sure to replace _ssdlite_mobilenet_v2_coco.con
 ```
 python3 export_inference_graph.py --input_type image_tensor --pipeline_config_path training/ssdlite_mobilenet_v2_coco.config --trained_checkpoint_prefix training/model.ckpt-XXXX --output_directory inference_graph 
 ```
-## 5: Copy files from VM instance on GCP back to Raspberry Pi (2 STEPS)
+## 6: Copy Files from VM instance on GCP back to Raspberry Pi (2 STEPS)
 
-Copy the newly created _inference_graph_ directory (which should now contain a frozen inference graph) from your VM instance to your desktop, and then from your desktop back to the raspberry pi using WinSCP (if you saved the IP addresses from Step 2 (see above)), this should be trivial
+Copy the newly created _inference_graph_ directory (which should now contain a frozen inference graph) from your VM instance to your desktop, and then from your desktop back to the raspberry pi using WinSCP (if you saved the IP addresses from Step 2 (see above)), this should be trivial. Save the _inference_graph_ directory under _tensorflow/models/research/object_detection_
 
-## 6. Testing your Custom Model:
+## 7. Testing your Custom Model:
 
 ### Test your Custom Model on Live Video Feed (Picamera or Webcam)
 
@@ -220,6 +234,8 @@ MODEL_NAME = ‘inference_graph’                                   # change di
 ```
 Save changes and exit
 
+Plug in your picamera or webcam to the raspberry pi (if you haven't already)
+
 In _object_detection_ folder: 
 
 ```
@@ -232,7 +248,7 @@ python3 <YOUR_MODULE_NAME>_picamera.py                           # run this if y
 Save image(s) in _object_detection_ directory that you would like to test
 
 ```
-cp Object_detection_image.py <YOUR_MODULE_NAME>_image.py     # If you are using a picamera or webcam  
+cp Object_detection_image.py <YOUR_MODULE_NAME>_image.py     # If you are using an image 
 ```
 Edit the file: find _IMAGE_NAME = 'test1.jpg'_ and replace _test1_ with the name of your image
 
