@@ -17,6 +17,8 @@ The tutorial begins by explaining how to install TensorFlow and OpenCV on both t
 # Outline of Steps in Tutorial
 1. [Install Tensorflow, OpenCV, and all necessary dependencies on the raspberry pi](##-1:-install-tensorflow,-opencv,-and-all-the-necessary-dependencies-on-the-raspberry-pi)
 
+[Go to Heading section] (#-this-is-a-heading)
+
 2. Take photos and label images using labelImg
 
 3. Create a GCP VM instance (this step can be skipped if you would rather perform the training directly on your computer)
@@ -259,3 +261,4 @@ python3 Object_detection_image.py
 ```
 
 
+# This is a heading
