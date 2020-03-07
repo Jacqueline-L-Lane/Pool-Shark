@@ -17,18 +17,18 @@ The tutorial begins by explaining how to install TensorFlow and OpenCV on both t
 # Outline of Steps in Tutorial
 1. [Install Tensorflow, OpenCV, and all necessary dependencies on the raspberry pi](#1-install-tensorflow-opencv-and-all-the-necessary-dependencies-on-the-raspberry-pi)
 
+2. [Take photos and label images using labelImg](#2-label-images)
 
-2. Take photos and label images using labelImg
+3. [Create a GCP VM instance](#3-google-cloud-platform-gcp-vm-instance) (this step can be skipped if you would rather perform the training directly on your computer)
 
-3. Create a GCP VM instance (this step can be skipped if you would rather perform the training directly on your computer)
+4. [Copy files from pi to GCP VM instance](#4-copy-files-from-raspberry-pi-to-vm-instance-on-gcp-2-steps)
 
-4. Copy _object_detection_ directory from pi to GCP VM instance
+5. [Train your custom model on the GCP VM instance](#5-training-your-custom-model)
 
-5. Train your custom model on the GCP VM instance
+6. [Copy files from GCP VM instance to pi](#6-copy-files-from-vm-instance-on-gcp-back-to-raspberry-pi-2-steps)
+)
 
-6. Copy _inference_graph_ directory from GCP VM instance to pi
-
-7. Test your custom model using either live video feed, images, or pre-recorded video
+7. [Test your custom model using either live video feed, images, or pre-recorded video](#7-testing-your-custom-model)
 
 
 # Steps
