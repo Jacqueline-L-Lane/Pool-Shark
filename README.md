@@ -1,5 +1,7 @@
 # Pool Shark
 
+### A Pool Playing Robot
+
 MAE 162D/E Capstone Project
 
-February 2020
+Created February 2020
