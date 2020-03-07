@@ -15,20 +15,20 @@ The tutorial begins by explaining how to install TensorFlow and OpenCV on both t
 **Note 2:** An older version of TensorFlow (TensorFlow 1.15) is currently being used until the pycocotools bug with TensorFlow 2.0's model_main.py gets resolved. This will require you to have to use a deprecated training file, though this will be explained in detail.
 
 # Outline of Steps in Tutorial
-1. [Install Tensorflow, OpenCV, and all necessary dependencies on the raspberry pi](#1-install-tensorflow-opencv-and-all-the-necessary-dependencies-on-the-raspberry-pi)
+1. [Install Tensorflow, OpenCV, and All the Necessary Dependencies on the Raspberry Pi](#1-install-tensorflow-opencv-and-all-the-necessary-dependencies-on-the-raspberry-pi)
 
-2. [Take photos and label images using labelImg](#2-label-images)
+2. [Label Images](#2-label-images)
 
-3. [Create a GCP VM instance](#3-google-cloud-platform-gcp-vm-instance) (this step can be skipped if you would rather perform the training directly on your computer)
+3. [Create a Google Cloud Platform (GCP) VM Instance](#3-create-a-google-cloud-platform-gcp-vm-instance) (this step can be skipped if you would rather perform the training directly on your computer)
 
-4. [Copy files from pi to GCP VM instance](#4-copy-files-from-raspberry-pi-to-vm-instance-on-gcp-2-steps)
+4. [Copy Files from Raspberry Pi to GCP VM Instance](#4-copy-files-from-raspberry-pi-to-vm-instance-on-gcp-2-steps)
 
-5. [Train your custom model on the GCP VM instance](#5-training-your-custom-model)
+5. [Train Your Custom Model](#5-train-your-custom-model)
 
-6. [Copy files from GCP VM instance to pi](#6-copy-files-from-vm-instance-on-gcp-back-to-raspberry-pi-2-steps)
+6. [Copy Files from GCP VM Instance to Raspberry Pi](#6-copy-files-from-vm-instance-on-gcp-back-to-raspberry-pi-2-steps)
 )
 
-7. [Test your custom model using either live video feed, images, or pre-recorded video](#7-testing-your-custom-model)
+7. [Test Your Custom Model](#7-test-your-custom-model)
 
 
 # Steps
@@ -63,7 +63,7 @@ cd tensorflow/models/research
 sudo python3 setup.py install
 python3 generate_tfrecord.py --csv_input=images/train_labels.csv --image_dir=images/train --output_path=data/train.record
 ```
-## 3: Google Cloud Platform (GCP) VM Instance
+## 3: Create a Google Cloud Platform (GCP) VM Instance
 
 ### 1. Create a virtual machine (VM) instance on GCP
 
@@ -154,7 +154,7 @@ F. Save your site settings using the _Save_ button. Login using the _Login_ butt
 
 G. Now copy (click and drag) _object_detection_ directory from your personal computer into tensorflow/models/research/ on the VM instance
 
-## 5. Training your Custom Model
+## 5. Train your Custom Model
 
 Open GCP VM instance (click _SSH_ button)
 
@@ -218,7 +218,7 @@ python3 export_inference_graph.py --input_type image_tensor --pipeline_config_pa
 
 Copy the newly created _inference_graph_ directory (which should now contain a frozen inference graph) from your VM instance to your desktop, and then from your desktop back to the raspberry pi using WinSCP (if you saved the IP addresses from Step 2 (see above)), this should be trivial. Save the _inference_graph_ directory under _tensorflow/models/research/object_detection_
 
-## 7. Testing your Custom Model:
+## 7. Test your Custom Model:
 
 ### Test your Custom Model on Live Video Feed (Picamera or Webcam)
 
