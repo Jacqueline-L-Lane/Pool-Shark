@@ -26,7 +26,7 @@ def main():
     print("just to get this to compile")
     # setup()
     # Get initial frame from camera
-    # Perform object detection on frame using OpenCV (get bounding boxes -- start off simple)
+    # Perform object detection on frame using TensorFlow (get bounding boxes -- start off simple)
         # Get coordinates for pockets (coordinates can be fixed)
         # Get coordinates for cue ball (keep track of where this is located!)
         # Get coordinates for all other object balls
