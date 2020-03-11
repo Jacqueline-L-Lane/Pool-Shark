@@ -49,7 +49,7 @@ def main():
         # Step 3:
         # TODO: Translate trajectories into manageable commands that the striker can understand
             # Force -> Speed with which to hit the ball
-            # Coordiantes of objects and paths -> control of the striker
+            # Coordinates of objects and paths -> control of the striker
             # TODO: how to deal with driving over object balls in the way?
 
         # Step 4:
