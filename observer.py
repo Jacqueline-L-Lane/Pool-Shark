@@ -37,7 +37,7 @@ def main():
         # Step 1:
         # If count > 1
             # Get frame
-            # Perform object detection on frame using OpenCV (get bounding boxes -- start off simple)
+            # Perform object detection on frame using Tensorflow (get bounding boxes -- start off simple)
                 # Get coordinates for pockets (coordinates can be fixed)
                 # Get coordinates for cue ball (keep track of where this is located!)
                 # Get coordinates for all other object balls
