@@ -22,12 +22,12 @@ s.connect((HOST,PORT))
 
 #Lets loop awaiting for your input
 while True:
-	command = raw_input('Enter command: ')
-	s.send(command)
-	reply = s.recv(1024)
-		if reply == 'Terminate':
-			break
-		print reply
+    command = raw_input('Enter command: ')
+    s.send(command)
+    reply = s.recv(1024)
+    if reply == 'Terminate':
+	break
+    print reply
 
 # Camera Calibration (performed once)
 #def setup():
