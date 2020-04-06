@@ -20,7 +20,7 @@ PORT = 12345 # Must match the server port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 
-#Lets loop awaiting for your input
+# Loop awaiting for input
 while True:
     command = raw_input('Enter command: ')
     s.send(command)
