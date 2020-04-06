@@ -11,9 +11,9 @@ print 'Socket created'
 
 # Manage error exception:
 try:
-	s.bind((HOST, PORT))
+    s.bind((HOST, PORT))
 except socket.error:
-	print 'Bind failed '
+    print 'Bind failed '
 
 s.listen(5)
 print 'Socket awaiting messages'
@@ -22,24 +22,24 @@ print 'Connected'
 
 # Await message from observer: 
 while True:
-	data = conn.recv(SIZE)
-	print 'Sent a message back in response to: ' + data
-	reply = ''
+    data = conn.recv(SIZE)
+    print 'Sent a message back in response to: ' + data
+    reply = ''
 
-	# Process message:
-	if data == 'Hello':
-		reply = 'Hi'
-	elif data == 'Do this':
-		reply = 'Done'
+    # Process message:
+    if data == 'Hello':
+	reply = 'Hi'
+    elif data == 'Do this':
+        reply = 'Done'
 
-	# End:
-	elif data == 'quit':
-		conn.send('Terminating')
-		break
-	else:
-		reply = 'Unknown command'
+    # End:
+    elif data == 'quit':
+        conn.send('Terminating')
+	break
+    else:
+	reply = 'Unknown command'
 
-	# Send reply
-	conn.send(reply)
+    # Send reply
+    conn.send(reply)
   
 conn.close() # Close connections
