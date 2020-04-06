@@ -32,8 +32,6 @@ while True:
 # Camera Calibration (performed once)
 #def setup():
 
-# Socket / zmq Communication stuff
-
 def main():
     print("just to get this to compile")
     # setup()
