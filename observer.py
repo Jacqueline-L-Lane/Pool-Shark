@@ -15,7 +15,19 @@ import sys
 import time
 import zlib
 
-#HOST = '192.168.1.101'  # change this to IP address of raspberry pi on striker
+HOST = '' # IP or Hostname of striker raspberry pi
+PORT = 12345 # Must match the server port
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((HOST,PORT))
+
+#Lets loop awaiting for your input
+while True:
+	command = raw_input('Enter command: ')
+	s.send(command)
+	reply = s.recv(1024)
+		if reply == 'Terminate':
+			break
+		print reply
 
 # Camera Calibration (performed once)
 #def setup():
