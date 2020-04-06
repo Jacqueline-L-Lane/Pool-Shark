@@ -20,20 +20,19 @@ PORT = 12345 # Must match the server port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 
-# Loop awaiting for input
-while True:
-    command = raw_input('Enter command: ')
-    s.send(command)
-    reply = s.recv(1024)
-    if reply == 'Terminate':
-	break
-    print reply
-
 # Camera Calibration (performed once)
 #def setup():
 
 def main():
-    print("just to get this to compile")
+    # Loop awaiting for input                      <- change this later
+    while True:
+        command = raw_input('Enter command: ')
+        s.send(command)
+        reply = s.recv(1024)
+        if reply == 'Terminate':
+	    break
+        print reply
+	
     # setup()
     # Get initial frame from camera
     # Perform object detection on frame using TensorFlow (get bounding boxes -- start off simple)
