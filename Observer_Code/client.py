@@ -1,6 +1,6 @@
 import socket
 
-HOST = '192.168.1.70' # Enter IP or Hostname of your server
+HOST = '192.168.1.71' # Enter IP or Hostname of your server
 PORT = 12345 # Pick an open Port (1000+ recommended), must match the server port
 SIZE = 1024
 
