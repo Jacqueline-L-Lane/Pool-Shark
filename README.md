@@ -30,3 +30,4 @@ Created February 2020
 3. run_pool_shark.py instructs the Striker to follow a pre-determined path and then wind the servo
 
 4. pool_shark.service is a service to start run_pool_shark.py when the raspberry pi boots up
+   Instructions on how to set up a service on raspberry pi: https://www.raspberrypi.org/documentation/linux/usage/systemd.md
