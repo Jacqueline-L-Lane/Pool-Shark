@@ -1,0 +1,85 @@
+item {
+  id: 1
+  name: '1_ball'
+}
+
+item {
+  id: 2
+  name: '2_ball'
+}
+
+item {
+  id: 3
+  name: '3_ball'
+}
+
+item {
+  id: 4
+  name: '4_ball'
+}
+
+item {
+  id: 5
+  name: '5_ball'
+}
+
+item {
+  id: 6
+  name: '6_ball'
+}
+
+item {
+  id: 7
+  name: '7_ball'
+}
+
+item {
+  id: 8
+  name: '8_ball'
+}
+
+item {
+  id: 9
+  name: '9_ball'
+}
+
+item {
+  id: 10
+  name: '10_ball'
+}
+
+item {
+  id: 11
+  name: '11_ball'
+}
+
+item {
+  id: 12
+  name: '12_ball'
+}
+
+item {
+  id: 13
+  name: '13_ball'
+}
+
+item {
+  id: 14
+  name: '14_ball'
+}
+
+item {
+  id: 15
+  name: '15_ball'
+}
+
+item {
+  id: 16
+  name: 'cue_ball'
+}
+
+item {
+  id: 17
+  name: 'pocket'
+}
+
