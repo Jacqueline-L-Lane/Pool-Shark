@@ -1,0 +1,25 @@
+Observer Code:
+==============
+
+	1. Object_dection folder contains: 
+
+		-Computer vision code and frozen inference graph
+
+		-Training images
+
+		-Testing images
+
+	2. client.py is one of two files that implement communication between the Observer and Striker raspberry pis via sockets
+
+	3. timeLapseVideo.sh is a simple script that takes a bunch of photos using the webcam to be used for training and testing
+
+Striker Code:
+=============
+
+	1. Omni_wheel_code folder contains omni wheel code including PI controllers
+
+	2. server.py is one of two files that implement communication between the Observer and Striker raspberry pis via sockets
+
+	3. run_pool_shark.py instructs the Striker to follow a pre-determined path and then wind the servo
+
+	4. pool_shark.service is a service to start run_pool_shark.py when the raspberry pi boots up
