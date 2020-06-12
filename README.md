@@ -11,7 +11,7 @@ Created February 2020
 1. Object_dection folder contains: 
 
 	-Computer vision code and frozen inference graph 
-	 (code from EdjeElectronics: https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10)
+	 (code borrowed from EdjeElectronics: https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10)
 
 	-Training images
 
