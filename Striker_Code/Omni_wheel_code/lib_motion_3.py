@@ -1,99 +1,38 @@
+# lib_motion_3.py
+
 import math
 import statistics
 import time
-
 import pigpio
 
 import lib_para_360_servo
 
 class control:
     """
-    Controls the robot movement.
+    Controls the robot's movement.
 
-    This class controls the robots movement by controlling the two Parallax Feedback 360° 
-    High-Speed Servos `360_data_sheet`_ . The robots local coordinate system is defined in
-    the following way. X-axis positive is straight forward, y-axis positive is perpendicular 
-    to the x-axis in the direction to the left wheel. The center (0/0) is where the middle
-    of the robots chassi is cutting across a imaginary line through both wheels/servos.
-    Angle phi is the displacement of the local coordinate system to the real world 
-    coordinate system. See :ref:`Used_local_coordinate_system` for a picture of it.
+    This class controls the robots movement by controlling 3 Parallax Feedback 360° 
+    High-Speed Servos. 
 
     .. warning::
         Be carefull with setting the min and max pulsewidth! Test carefully ``min_pw`` and ``max_pw``
         before setting them. Wrong values can damage the servo, see set_servo_pulsewidth_ !!!
 
-    :param pigpio.pi pi: 
-        Instance of a pigpio.pi() object.
-    :param int width_robot:
-        Width of the robot in mm, so distance between middle right wheel and middle 
-        left wheel. 
-        **Default:** 102 mm, measured.
-    :param diameter_wheels:
-        Diameter of both wheels. 
-        **Default:** 66 mm, measured and taken from the products website `wheel_robot`_ .
-    :param int unitsFC:
-        Units in a full circle, so each wheel is divided into X sections/ticks. 
-        This value should not be changed.
-        **Default:** 360
-    :param float dcMin_l:
-        Min duty cycle of the left wheel. 
-        **Default:** 27.3, measured with method :meth:`lib_para_360_servo.calibrate_pwm` , 
-        see :ref:`Examples` .
-    :param float dcMax_l:
-        Max duty cycle of the left wheel. 
-        **Default:** 969.15,  measured with method :meth:`lib_para_360_servo.calibrate_pwm` , 
-        see :ref:`Examples` .
-    :param float dcMin_r:
-        Min duty cycle of the right wheel. 
-        **Default:** 27.3, measured with method :meth:`lib_para_360_servo.calibrate_pwm` , 
-        see :ref:`Examples` .
-    :param float dcMax_r:
-        Max duty cycle of the left wheel. 
-        **Default:** 978.25,  measured with method :meth:`lib_para_360_servo.calibrate_pwm` , 
-        see :ref:`Examples` .
-    :param int l_wheel_gpio:
-        GPIO identified by their Broadcom number, see elinux.org_ .
-        To this GPIO the feedback wire of the left servo has to be connected.
-    :param int r_wheel_gpio:
-        GPIO identified by their Broadcom number, see elinux.org_ .
-        To this GPIO the feedback wire of the right servo has to be connected.
-    :param int servo_l_gpio:
-        GPIO identified by their Broadcom number, see elinux.org_ .
-        To this GPIO the control wire of the left servo has to be connected.
+    
     :param int min_pw_l:
         Min pulsewidth, see **Warning**, carefully test the value before!
         **Default:** 1280, taken from the data sheet `360_data_sheet`_ .
     :param int max_pw_l:
         Max pulsewidth, see **Warning**, carefully test the value before!
         **Default:** 1720, taken from the data sheet `360_data_sheet`_ .
-    :param int min_speed_l:
-        Min speed which the servo is able to move. **Default:** -1, so that 
-        the speed range is also scaled between -1 and 1 as the output of 
-        the inner control loop.
-    :param int max_speed_l:
-        Max speed which the servo is able to move. **Default:** 1, so that 
-        the speed range is also scaled between -1 and 1 as the output of 
-        the inner control loop. 
-    :param int servo_r_gpio:
-        GPIO identified by their Broadcom number, see elinux.org_ .
-        To this GPIO the control wire of the right servo has to be connected.
+    
     :param int min_pw_r:
         Min pulsewidth, see **Warning**, carefully test the value before!
         **Default:** 1280, taken from the data sheet `360_data_sheet`_ .
     :param int max_pw_r:
         Max pulsewidth, see **Warning**, carefully test the value before!
         **Default:** 1720, taken from the data sheet `360_data_sheet`_ .
-    :param int min_speed_r:
-        Min speed which the servo is able to move. **Default:** -1, so that 
-        the speed range is also scaled between -1 and 1 as the output of 
-        the inner control loop. 
-    :param int max_speed_r:
-        Max speed which the servo is able to move. **Default:** 1, so that 
-        the speed range is also scaled between -1 and 1 as the output of 
-        the inner control loop. 
-    :param float sampling_time:
-        Sampling time of the four PID controllers in seconds.
-        **Default:** 0.01.
+    
         1. PWM of motor feedback is 910Hz (0,001098901 s), so position changes cannot 
         be recognized faster than 1.1 ms. Therefore, it is not needed to run the outer control 
         loop more often and update the speed values which have a 50 Hz (20ms) PWM.
@@ -102,63 +41,37 @@ class control:
         the bottleneck which drastically slows down the code by the factor ~400 
         (0,002 seconds vs 0,000005 seconds; runtime with vs without writing pulsewidth).
         3. For recognizing the RPMs of the wheels 10ms is needed to have enough changes in the
-        position. This was found out by testing. See method :meth:`move` for more informations.
-    :param int,float Kp_p:
-        Kp value of the outer PID controllers, see method :meth:`move` 
-        for more informations.
-        **Default:** 0.1.
-    :param int,float Ki_p:
-        Ki value of the outer PID controllers, see method :meth:`move` 
-        for more informations.
-        **Default:** 0.1.
-    :param int,float Kd_p:
-        Kd value of the outer PID controllers, see method :meth:`move` 
-        for more informations.
-        **Default:** 0.
-    :param int,float Kp_s:
-        Kp value of the inner PID controllers, see method :meth:`move` 
-        for more informations.
-        **Default:** 0.5.
-    :param int,float Ki_s:
-        Ki value of the inner PID controllers, see method :meth:`move` 
-        for more informations.
-        **Default:** 0.
-    :param int,float Kd_s:
-        Kd value of the inner PID controllers, see method :meth:`move` 
-        for more informations.
-        **Default:** 0.
-
-    .. _`360_data_sheet`: https://www.parallax.com/sites/default/files/downloads/900-00360-Feedback-360-HS-Servo-v1.1.pdf
-    .. _`wheel_robot`: https://www.parallax.com/product/28114
-    .. _elinux.org: https://elinux.org/RPi_Low-level_peripherals#Model_A.2B.2C_B.2B_and_B2
+        position. This was found out by testing. See method :meth:`move` for more information.
+    
     """
 
     def __init__(
         self, pi, width_robot = 92.74, diameter_wheels = 35, unitsFC = 360,
-        dcMin_l = 27.3, dcMax_l = 950.95,
-        dcMin_r = 27.3, dcMax_r = 960.96,
-        l_wheel_gpio = 16, r_wheel_gpio = 20,
-        servo_l_gpio = 17, min_pw_l = 1280, max_pw_l = 1720, min_speed_l = -1, max_speed_l = 1,
-        servo_r_gpio = 27, min_pw_r = 1280, max_pw_r = 1720, min_speed_r = -1, max_speed_r = 1,
+        dcMin_1 = 27.3, dcMax_1 = 950.95,
+        dcMin_2 = 27.3, dcMax_2 = 960.96,
+	dcMin_3 = 27.3, dcMax_3 = 987.35,
+        wheel_1_gpio = 16, wheel_2_gpio = 20, wheel_3_gpio = 21,
+        servo_1_gpio = 17, min_pw_1 = 1280, max_pw_1 = 1720, min_speed_1 = -1, max_speed_1 = 1,
+        servo_2_gpio = 27, min_pw_2 = 1280, max_pw_2 = 1720, min_speed_2 = -1, max_speed_2 = 1,
+        servo_3_gpio = 22, min_pw_3 = 1280, max_pw_3 = 1720, min_speed_3 = -1, max_speed_3 = 1,
         sampling_time = 0.01,
-        #Don't make values too big (output of position control will slow down too abruptly)
-        # Outer PID controllers:
-        Kp_p = 0.075, # 0.1 (BEST: 0.075)
-        Ki_p = 0.133, # 0.1 (BEST: 0.133)
-        Kd_p = 0,   # 0
-        # Inner PID controllers:
-        Kp_s = 0.5, # 0.5
-        Ki_s = 0,   # 0
-        Kd_s = 0):  # 0
-
+        Kp_p = 0.1, # values not too big; otherwise output of position control would slow down too abruptly
+        Ki_p = 0.1,
+        Kd_p = 0,
+        Kp_s = 0.5,
+        Ki_s = 0,
+        Kd_s = 0):
+        
         self.pi = pi
         self.width_robot = width_robot
         self.diameter_wheels = diameter_wheels
         self.unitsFC = unitsFC
-        self.dcMin_l = dcMin_l
-        self.dcMax_l = dcMax_l
-        self.dcMin_r = dcMin_r
-        self.dcMax_r = dcMax_r
+        self.dcMin_1 = dcMin_1
+        self.dcMax_1 = dcMax_1
+        self.dcMin_2 = dcMin_2
+        self.dcMax_2 = dcMax_2
+        self.dcMin_3 = dcMin_3
+        self.dcMax_3 = dcMax_3
         self.sampling_time = sampling_time
         self.Kp_p = Kp_p
         self.Ki_p = Ki_p
@@ -167,54 +80,57 @@ class control:
         self.Ki_s = Ki_s
         self.Kd_s = Kd_s
 
-        self.l_wheel = lib_para_360_servo.read_pwm(pi = self.pi, gpio = l_wheel_gpio)
-        self.r_wheel = lib_para_360_servo.read_pwm(pi = self.pi, gpio = r_wheel_gpio)
-        self.servo_l = lib_para_360_servo.write_pwm(pi = self.pi, gpio = servo_l_gpio, min_pw = min_pw_l, max_pw = max_pw_l, min_speed = min_speed_l, max_speed = max_speed_l)
-        self.servo_r = lib_para_360_servo.write_pwm(pi = self.pi, gpio = servo_r_gpio, min_pw = min_pw_r, max_pw = max_pw_r, min_speed = min_speed_r, max_speed = max_speed_r)
+        self.wheel_1 = lib_para_360_servo.read_pwm(pi = self.pi, gpio = wheel_1_gpio)
+        self.wheel_2 = lib_para_360_servo.read_pwm(pi = self.pi, gpio = wheel_2_gpio)
+        self.wheel_3 = lib_para_360_servo.read_pwm(pi = self.pi, gpio = wheel_3_gpio)
+        self.servo_l = lib_para_360_servo.write_pwm(pi = self.pi, gpio = servo_1_gpio, min_pw = min_pw_1, max_pw = max_pw_1, min_speed = min_speed_1, max_speed = max_speed_1)
+        self.servo_r = lib_para_360_servo.write_pwm(pi = self.pi, gpio = servo_2_gpio, min_pw = min_pw_2, max_pw = max_pw_2, min_speed = min_speed_2, max_speed = max_speed_2)
+        self.servo_r = lib_para_360_servo.write_pwm(pi = self.pi, gpio = servo_3_gpio, min_pw = min_pw_3, max_pw = max_pw_3, min_speed = min_speed_3, max_speed = max_speed_3)
 
-        #needed time for initializing the four instances
+        # Needed time for initializing the four instances
         time.sleep(1)
 
     #angular position in units full circle
-    def get_angle_l(self):
+    def get_angle_1(self):
 
         #driving forward will increase the angle
-        angle_l = (self.unitsFC - 1) - ((self.l_wheel.read() - self.dcMin_l) * self.unitsFC) / (self.dcMax_l - self.dcMin_l + 1)
+        angle_1 = (self.unitsFC - 1) - ((self.wheel_1.read() - self.dcMin_1) * self.unitsFC) / (self.dcMax_1 - self.dcMin_1 + 1)
 
-        angle_l = max(min((self.unitsFC - 1), angle_l), 0)
+        angle_1 = max(min((self.unitsFC - 1), angle_1), 0)
 
-        return angle_l
+        return angle_1
 
-    #angular position in units full circle
-    def get_angle_r(self):
+    def get_angle_2(self):
+        angle_2 = (self.wheel_2.read() - self.dcMin_2) * self.unitsFC / (self.dcMax_2 - self.dcMin_2 + 1)
+        angle_2 = max(min((self.unitsFC - 1), angle_2), 0)
+        return angle_2
 
-        #driving forward will increase the angle
-        angle_r = (self.r_wheel.read() - self.dcMin_r) * self.unitsFC / (self.dcMax_r - self.dcMin_r + 1)
+    # NEW                                             ????????
+    def get_angle_3(self):
+        angle_3 = (self.wheel_3.read() - self.dcMin_3) * self.unitsFC / (self.dcMax_3 - self.dcMin_3 + 1)
+        angle_3 = max(min((self.unitsFC - 1), angle_3), 0)
+        return angle_3
 
-        angle_r = max(min((self.unitsFC - 1), angle_r), 0)
 
-        return angle_r
-
-    def set_speed_l(self, speed):
-
+    def set_speed_1(self, speed):
         #the value of the speed of the left wheel will always be multiplied 
         #by minus 1 before setting it.
         #this ensures that e.g. positive passed speed values/arguments
         #will let the robot drive forward, which means for the left servo 
         #that it has to rotate counter-clockwise/negative in its local 
         #orientation system as it is defined in the lib_para_360_servo module.
-        self.servo_l.set_speed(-speed)
-
+        self.servo_1.set_speed(-speed)
         return None
 
-    def set_speed_r(self, speed):
+    def set_speed_2(self, speed):
+        self.servo_2.set_speed(speed)        # ???
+        return None
 
-        self.servo_r.set_speed(speed)
-
+    def set_speed_3(self, speed):
+        self.servo_3.set_speed(speed)        # ???
         return None
 
     def get_total_angle(self, angle, unitsFC, prev_angle, turns):
-       
         #### counting number of rotations
         #If 4th to 1st quadrant
         if((angle < (0.25*unitsFC)) and (prev_angle > (0.75*unitsFC))):
@@ -232,27 +148,21 @@ class control:
         return turns, total_angle
 
     def get_target_angle(self, number_ticks, angle):
-        
         #positiv number_ticks will be added, negativ number_ticks substracted
         target_angle = angle + number_ticks
-
         return target_angle
 
     def tick_length(self):
-
         tick_length_mm = math.pi * self.diameter_wheels / self.unitsFC
-
         return tick_length_mm
 
     def arc_circle(self, degree):
-
         arc_circle_mm = degree * math.pi * self.width_robot / 360.0
-
         return arc_circle_mm
 
     def turn(self, degree):
         """
-        Turns the robot about x degree.
+        Turns the robot about x degrees.
 
         This method turns the robot x degree to the left or to the right. 
         Positive degree values turn the robot to the left,
@@ -263,11 +173,8 @@ class control:
         :param int,float degree:
             Degree the robot has to turn.
         """
-
         number_ticks = self.arc_circle(degree)/self.tick_length()
-
         self.move(number_ticks = number_ticks, turn = True)
-
         return None
 
     def straight(self, distance_in_mm):
@@ -283,11 +190,8 @@ class control:
         :param int,float distance_in_mm:
             Distance the robot has to move.
         """
-
         number_ticks = distance_in_mm/self.tick_length()
-
         self.move(number_ticks = number_ticks, straight = True)
-
         return None
 
     def move(
@@ -332,19 +236,21 @@ class control:
             **Default:** False.
         """
 
-        turns_l = 0
-        turns_r = 0
+        turns_1 = 0
+        turns_2 = 0
+        turns_3 = 0
 
-        angle_l = self.get_angle_l()
-        angle_r = self.get_angle_r()
+        angle_1 = self.get_angle_1()
+        angle_2 = self.get_angle_2()
+        angle_3 = self.get_angle_3()
 
-        target_angle_r = self.get_target_angle(number_ticks = number_ticks, angle = angle_r)
+        target_angle_r = self.get_target_angle(number_ticks = number_ticks, angle = angle_r)   # ????????
 
         if straight == True:
 
             #speed and number_ticks of servo_l must rotate in
             #SAME direction to servo_r while driving straight
-            target_angle_l = self.get_target_angle(number_ticks = number_ticks, angle = angle_l)
+            target_angle_l = self.get_target_angle(number_ticks = number_ticks, angle = angle_l) # ????
 
         elif turn == True:
             
@@ -392,8 +298,9 @@ class control:
             #- second iteration of the while loop prev_total_angle_* is missing, 
             #which will throw another exception
             try:
-                turns_l, total_angle_l = self.get_total_angle(angle_l, self.unitsFC, prev_angle_l, turns_l)
-                turns_r, total_angle_r = self.get_total_angle(angle_r, self.unitsFC, prev_angle_r, turns_r)
+                turns_1, total_angle_l = self.get_total_angle(angle_l, self.unitsFC, prev_angle_l, turns_1)
+                turns_2, total_angle_r = self.get_total_angle(angle_r, self.unitsFC, prev_angle_r, turns_2)
+		turns_3, total_angle_3 = self.get_total_angle(angle_3, self.unitsFC, prev_angle_3, turns_3)
 
                 #### cascade control right wheel
 
@@ -559,8 +466,9 @@ class control:
         .. _callback: http://abyz.me.uk/rpi/pigpio/python.html#callback
         """
 
-        self.l_wheel.cancel()
-        self.r_wheel.cancel()
+        self.wheel_1.cancel()
+        self.wheel_2.cancel()
+        self.wheel_3.cancel()
 
 if __name__ == '__main__':
 
