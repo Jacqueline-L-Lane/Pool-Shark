@@ -1,0 +1,14 @@
+[Unit]
+Description=My service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 -u run_pool_shark.py
+WorkingDirectory=/home/pi/thonny 
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
