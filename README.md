@@ -14,9 +14,8 @@ Created February 2020
 	
 	 Code borrowed from EdjeElectronics: https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10
 
-	-Training images
-
-	-Testing images
+	
+	Note: Does not include testing or training images
 
 2. client.py is one of two files that implement communication between the Observer and Striker raspberry pis via sockets
 
